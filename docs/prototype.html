@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoiced.ca — Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #1a3a2a;
+    --sage:   #2d6a4f;
+    --mint:   #52b788;
+    --cream:  #f8f4ee;
+    --warm:   #ede8df;
+    --paper:  #fdfaf5;
+    --ink:    #1c1c1c;
+    --muted:  #7a7a72;
+    --border: #e2ddd5;
+    --red:    #c0392b;
+    --amber:  #d4820a;
+    --blue:   #2563eb;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 220px;
+    min-height: 100vh;
+    background: var(--forest);
+    display: flex;
+    flex-direction: column;
+    padding: 28px 0;
+    flex-shrink: 0;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+  }
+
+  .logo {
+    padding: 0 24px 32px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 16px;
+  }
+
+  .logo-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: white;
+    letter-spacing: -0.3px;
+  }
+
+  .logo-sub {
+    font-size: 10px;
+    color: var(--mint);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 24px;
+    color: rgba(255,255,255,0.55);
+    font-size: 13.5px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-item:hover { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.04); }
+
+  .nav-item.active {
+    color: white;
+    background: rgba(82,183,136,0.12);
+    border-left-color: var(--mint);
+    font-weight: 500;
+  }
+
+  .nav-icon { font-size: 15px; width: 18px; text-align: center; }
+
+  .nav-section {
+    font-size: 9.5px;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+    padding: 20px 24px 6px;
+  }
+
+  .sidebar-bottom {
+    margin-top: auto;
+    padding: 20px 24px 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .user-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--mint);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600; color: var(--forest);
+  }
+
+  .user-name { font-size: 12.5px; color: rgba(255,255,255,0.75); }
+  .user-plan { font-size: 10px; color: var(--mint); }
+
+  /* ── MAIN ── */
+  .main {
+    margin-left: 220px;
+    flex: 1;
+    min-height: 100vh;
+  }
+
+  /* ── TABS ── */
+  .tab-bar {
+    display: flex;
+    border-bottom: 2px solid var(--border);
+    background: var(--paper);
+    padding: 0 32px;
+  }
+
+  .tab {
+    padding: 14px 20px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.15s;
+  }
+
+  .tab:hover { color: var(--ink); }
+  .tab.active { color: var(--sage); border-bottom-color: var(--sage); }
+
+  /* ── SCREENS ── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ── DASHBOARD ── */
+  .page-header {
+    padding: 32px 32px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .page-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    color: var(--forest);
+    letter-spacing: -0.5px;
+  }
+
+  .page-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  .btn-primary {
+    background: var(--sage);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: background 0.15s;
+  }
+
+  .btn-primary:hover { background: var(--forest); }
+
+  .btn-secondary {
+    background: white;
+    color: var(--ink);
+    border: 1.5px solid var(--border);
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-secondary:hover { border-color: var(--sage); color: var(--sage); }
+
+  /* Stats */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding: 24px 32px;
+  }
+
+  .stat-card {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .stat-card.green::before { background: var(--mint); }
+  .stat-card.amber::before { background: var(--amber); }
+  .stat-card.red::before { background: var(--red); }
+
+  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 500; }
+  .stat-value { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--forest); margin-top: 6px; letter-spacing: -1px; }
+  .stat-note { font-size: 11.5px; color: var(--muted); margin-top: 4px; }
+
+  /* Invoice Table */
+  .table-wrap {
+    padding: 0 32px 32px;
+  }
+
+  .table-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .section-title { font-size: 13px; font-weight: 600; color: var(--ink); }
+
+  .filter-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .filter-btn {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1.5px solid var(--border);
+    background: white;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .filter-btn.active, .filter-btn:hover {
+    border-color: var(--sage);
+    color: var(--sage);
+    background: rgba(45,106,79,0.05);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  th {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    background: var(--warm);
+    border-bottom: 1.5px solid var(--border);
+  }
+
+  td {
+    padding: 14px 16px;
+    font-size: 13.5px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr:hover td { background: rgba(248,244,238,0.6); cursor: pointer; }
+
+  .inv-num { font-weight: 600; color: var(--forest); font-family: 'DM Serif Display', serif; }
+  .client-name { font-weight: 500; }
+  .amount { font-weight: 600; }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  .badge-draft    { background: #f0f0f0; color: #666; }
+  .badge-sent     { background: #dbeafe; color: #1d4ed8; }
+  .badge-paid     { background: #dcfce7; color: #166534; }
+  .badge-overdue  { background: #fee2e2; color: #991b1b; }
+
+  /* ── INVOICE BUILDER ── */
+  .builder-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
+    padding: 24px 32px;
+    align-items: start;
+  }
+
+  .builder-left {}
+
+  .form-section {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 16px;
+  }
+
+  .form-section-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .form-row.three { grid-template-columns: 1fr 1fr 1fr; }
+  .form-row.full { grid-template-columns: 1fr; }
+
+  label {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 5px;
+    letter-spacing: 0.2px;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    color: var(--ink);
+    background: var(--paper);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--sage);
+    background: white;
+  }
+
+  textarea { resize: vertical; min-height: 70px; }
+
+  /* Line Items */
+  .line-items-table { width: 100%; border-collapse: collapse; }
+
+  .line-items-table th {
+    text-align: left;
+    padding: 8px 10px;
+    font-size: 10.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 600;
+    background: var(--warm);
+    border-bottom: 1.5px solid var(--border);
+    border-radius: 0;
+  }
+
+  .line-items-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  .line-items-table input {
+    padding: 7px 9px;
+    font-size: 13px;
+    border-radius: 6px;
+  }
+
+  .line-del {
+    background: none;
+    border: none;
+    color: #ccc;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+    transition: color 0.15s;
+  }
+
+  .line-del:hover { color: var(--red); }
+
+  .add-line-btn {
+    background: none;
+    border: 1.5px dashed var(--border);
+    color: var(--sage);
+    padding: 8px 16px;
+    border-radius: 7px;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+    width: 100%;
+  }
+
+  .add-line-btn:hover { border-color: var(--sage); background: rgba(45,106,79,0.03); }
+
+  /* Tax Box */
+  .tax-box {
+    background: rgba(45,106,79,0.04);
+    border: 1.5px solid rgba(45,106,79,0.15);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+
+  .tax-box-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--sage);
+    margin-bottom: 10px;
+  }
+
+  .tax-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 4px 0;
+  }
+
+  .tax-line.zero-rated { color: var(--muted); font-style: italic; font-size: 12px; }
+  .tax-note { font-size: 11px; color: var(--muted); margin-top: 6px; font-style: italic; }
+
+  /* Summary card */
+  .summary-card {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+    position: sticky;
+    top: 20px;
+  }
+
+  .summary-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 16px;
+    color: var(--forest);
+    margin-bottom: 16px;
+  }
+
+  .summary-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .summary-line:last-of-type { border-bottom: none; }
+  .summary-line.total { font-weight: 700; font-size: 15px; padding-top: 12px; color: var(--forest); }
+  .summary-line .label { color: var(--muted); }
+
+  .currency-toggle {
+    display: flex;
+    background: var(--warm);
+    border-radius: 8px;
+    padding: 3px;
+    margin-bottom: 16px;
+    border: 1.5px solid var(--border);
+  }
+
+  .currency-btn {
+    flex: 1;
+    padding: 6px;
+    text-align: center;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.15s;
+  }
+
+  .currency-btn.active { background: white; color: var(--forest); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+  .action-stack { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
+
+  .btn-send {
+    background: var(--sage);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.15s;
+  }
+
+  .btn-send:hover { background: var(--forest); }
+
+  .btn-pdf {
+    background: white;
+    color: var(--ink);
+    border: 1.5px solid var(--border);
+    padding: 10px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+  }
+
+  .btn-pdf:hover { border-color: var(--sage); color: var(--sage); }
+
+  .btn-draft {
+    background: none;
+    color: var(--muted);
+    border: none;
+    padding: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12.5px;
+    cursor: pointer;
+    text-align: center;
+    transition: color 0.15s;
+  }
+
+  .btn-draft:hover { color: var(--ink); }
+
+  /* ── PDF PREVIEW ── */
+  .pdf-wrap {
+    padding: 24px 32px;
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+  }
+
+  .pdf-paper {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    padding: 52px 56px;
+    flex: 1;
+    max-width: 680px;
+    font-size: 13px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+
+  .pdf-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 44px;
+  }
+
+  .pdf-logo {
+    width: 48px; height: 48px;
+    background: var(--forest);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pdf-logo-letter {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: white;
+  }
+
+  .pdf-biz-name { font-weight: 700; font-size: 15px; color: var(--forest); margin-top: 8px; }
+  .pdf-biz-detail { font-size: 12px; color: var(--muted); line-height: 1.7; margin-top: 4px; }
+
+  .pdf-title-block { text-align: right; }
+  .pdf-invoice-word {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    color: var(--forest);
+    letter-spacing: -1px;
+  }
+
+  .pdf-inv-num { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  .pdf-dates {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-top: 10px;
+    text-align: right;
+  }
+
+  .pdf-date-label { font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .pdf-date-val { font-size: 13px; font-weight: 500; }
+
+  .pdf-divider { border: none; border-top: 2px solid var(--border); margin: 24px 0; }
+
+  .pdf-addresses { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+  .pdf-addr-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 600; margin-bottom: 8px; }
+  .pdf-addr-name { font-weight: 600; font-size: 14px; }
+  .pdf-addr-detail { font-size: 12.5px; color: var(--muted); line-height: 1.7; }
+
+  .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+  .pdf-table th {
+    text-align: left;
+    padding: 9px 12px;
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--muted);
+    background: var(--warm);
+    border-top: 1.5px solid var(--border);
+    border-bottom: 1.5px solid var(--border);
+  }
+
+  .pdf-table th:last-child { text-align: right; }
+  .pdf-table td { padding: 11px 12px; font-size: 13px; border-bottom: 1px solid var(--border); }
+  .pdf-table td:last-child { text-align: right; font-weight: 500; }
+
+  .pdf-totals { margin-left: auto; width: 240px; }
+  .pdf-total-line { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
+  .pdf-total-line .lbl { color: var(--muted); }
+  .pdf-total-line.grand { font-weight: 700; font-size: 16px; border-top: 2px solid var(--forest); padding-top: 10px; margin-top: 4px; color: var(--forest); }
+
+  .zero-rated-note {
+    background: rgba(45,106,79,0.05);
+    border-left: 3px solid var(--mint);
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    font-size: 11.5px;
+    color: var(--sage);
+    margin: 16px 0;
+    font-style: italic;
+  }
+
+  .pdf-footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); }
+
+  .pdf-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 180px;
+  }
+
+  /* ── SETTINGS ── */
+  .settings-wrap { padding: 24px 32px; max-width: 640px; }
+
+  .settings-section {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 16px;
+  }
+
+  .settings-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--forest);
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .toggle-row:last-child { border-bottom: none; }
+
+  .toggle-label { font-size: 13.5px; font-weight: 500; }
+  .toggle-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .toggle {
+    width: 40px; height: 22px;
+    background: var(--border);
+    border-radius: 11px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+
+  .toggle.on { background: var(--sage); }
+
+  .toggle::after {
+    content: '';
+    width: 18px; height: 18px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px; left: 2px;
+    transition: left 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+
+  .toggle.on::after { left: 20px; }
+
+  .plan-badge {
+    background: linear-gradient(135deg, var(--sage), var(--forest));
+    color: white;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .screen.active { animation: fadeIn 0.2s ease; }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-text">invoiced.ca</div>
+    <div class="logo-sub">🇨🇦 Canadian Freelancers</div>
+  </div>
+
+  <div class="nav-section">Main</div>
+  <div class="nav-item active" onclick="showScreen('dashboard', this)">
+    <span class="nav-icon">📋</span> Dashboard
+  </div>
+  <div class="nav-item" onclick="showScreen('builder', this)">
+    <span class="nav-icon">✏️</span> New Invoice
+  </div>
+  <div class="nav-item" onclick="showScreen('preview', this)">
+    <span class="nav-icon">📄</span> PDF Preview
+  </div>
+
+  <div class="nav-section">Manage</div>
+  <div class="nav-item" onclick="showScreen('clients', this)">
+    <span class="nav-icon">👤</span> Clients
+  </div>
+  <div class="nav-item" onclick="showScreen('settings', this)">
+    <span class="nav-icon">⚙️</span> Settings
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="user-pill">
+      <div class="avatar">M</div>
+      <div>
+        <div class="user-name">Michelle</div>
+        <div class="user-plan">Pro Plan ✓</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<main class="main">
+
+  <!-- Tab bar -->
+  <div class="tab-bar">
+    <div class="tab active" id="tab-dashboard" onclick="showScreen('dashboard', null, 'tab-dashboard')">Dashboard</div>
+    <div class="tab" id="tab-builder" onclick="showScreen('builder', null, 'tab-builder')">New Invoice</div>
+    <div class="tab" id="tab-preview" onclick="showScreen('preview', null, 'tab-preview')">PDF Preview</div>
+    <div class="tab" id="tab-clients" onclick="showScreen('clients', null, 'tab-clients')">Clients</div>
+    <div class="tab" id="tab-settings" onclick="showScreen('settings', null, 'tab-settings')">Settings</div>
+  </div>
+
+  <!-- ── DASHBOARD ── -->
+  <div class="screen active" id="screen-dashboard">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Invoices</div>
+        <div class="page-sub">April 2026 · Nova Scotia, Canada</div>
+      </div>
+      <button class="btn-primary" onclick="showScreen('builder', null, 'tab-builder')">＋ New Invoice</button>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card green">
+        <div class="stat-label">Paid This Month</div>
+        <div class="stat-value">$4,200</div>
+        <div class="stat-note">3 invoices settled</div>
+      </div>
+      <div class="stat-card amber">
+        <div class="stat-label">Outstanding</div>
+        <div class="stat-value">$2,750</div>
+        <div class="stat-note">2 invoices pending</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-label">Overdue</div>
+        <div class="stat-value">$850</div>
+        <div class="stat-note">1 invoice past due</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-header-row">
+        <div class="section-title">Recent Invoices</div>
+        <div class="filter-row">
+          <div class="filter-btn active">All</div>
+          <div class="filter-btn">Sent</div>
+          <div class="filter-btn">Paid</div>
+          <div class="filter-btn">Overdue</div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Invoice #</th>
+            <th>Client</th>
+            <th>Amount</th>
+            <th>Issued</th>
+            <th>Due</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr onclick="showScreen('preview', null, 'tab-preview')">
+            <td><span class="inv-num">INV-009</span></td>
+            <td><span class="client-name">Acme Corp</span><br><span style="font-size:11.5px;color:var(--muted)">🇺🇸 United States</span></td>
+            <td><span class="amount">$2,500.00 USD</span><br><span style="font-size:11.5px;color:var(--sage)">Zero-rated</span></td>
+            <td style="color:var(--muted);font-size:13px">Apr 10, 2026</td>
+            <td style="color:var(--muted);font-size:13px">May 10, 2026</td>
+            <td><span class="badge badge-sent">Sent</span></td>
+          </tr>
+          <tr>
+            <td><span class="inv-num">INV-008</span></td>
+            <td><span class="client-name">Maple Media</span><br><span style="font-size:11.5px;color:var(--muted)">🇨🇦 Ontario, Canada</span></td>
+            <td><span class="amount">$1,695.00 CAD</span><br><span style="font-size:11.5px;color:var(--muted)">incl. HST 13%</span></td>
+            <td style="color:var(--muted);font-size:13px">Apr 1, 2026</td>
+            <td style="color:var(--muted);font-size:13px">May 1, 2026</td>
+            <td><span class="badge badge-paid">Paid</span></td>
+          </tr>
+          <tr>
+            <td><span class="inv-num">INV-007</span></td>
+            <td><span class="client-name">Halifax Brew Co.</span><br><span style="font-size:11.5px;color:var(--muted)">🇨🇦 Nova Scotia, Canada</span></td>
+            <td><span class="amount">$977.50 CAD</span><br><span style="font-size:11.5px;color:var(--muted)">incl. HST 15%</span></td>
+            <td style="color:var(--muted);font-size:13px">Mar 15, 2026</td>
+            <td style="color:var(--muted);font-size:13px">Apr 14, 2026</td>
+            <td><span class="badge badge-overdue">Overdue</span></td>
+          </tr>
+          <tr>
+            <td><span class="inv-num">INV-006</span></td>
+            <td><span class="client-name">TechStart BC</span><br><span style="font-size:11.5px;color:var(--muted)">🇨🇦 British Columbia</span></td>
+            <td><span class="amount">$2,520.00 CAD</span><br><span style="font-size:11.5px;color:var(--muted)">incl. GST + PST</span></td>
+            <td style="color:var(--muted);font-size:13px">Mar 5, 2026</td>
+            <td style="color:var(--muted);font-size:13px">Apr 4, 2026</td>
+            <td><span class="badge badge-paid">Paid</span></td>
+          </tr>
+          <tr>
+            <td><span class="inv-num">INV-005</span></td>
+            <td><span class="client-name">Montreal Agency</span><br><span style="font-size:11.5px;color:var(--muted)">🇨🇦 Quebec, Canada</span></td>
+            <td><span class="amount">$1,807.38 CAD</span><br><span style="font-size:11.5px;color:var(--muted)">incl. GST + QST</span></td>
+            <td style="color:var(--muted);font-size:13px">Feb 20, 2026</td>
+            <td style="color:var(--muted);font-size:13px">Mar 22, 2026</td>
+            <td><span class="badge badge-paid">Paid</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── INVOICE BUILDER ── -->
+  <div class="screen" id="screen-builder">
+    <div class="page-header">
+      <div>
+        <div class="page-title">New Invoice</div>
+        <div class="page-sub">Fill in the details — tax is calculated automatically</div>
+      </div>
+    </div>
+
+    <div class="builder-layout">
+      <div class="builder-left">
+
+        <!-- Client -->
+        <div class="form-section">
+          <div class="form-section-title">Client</div>
+          <div class="form-row">
+            <div>
+              <label>Client Name</label>
+              <select id="clientSelect" onchange="updateTax()">
+                <option>Acme Corp (US)</option>
+                <option>Maple Media (Ontario)</option>
+                <option>Halifax Brew Co. (NS)</option>
+                <option>TechStart BC</option>
+                <option>Montreal Agency (QC)</option>
+                <option>+ Add new client</option>
+              </select>
+            </div>
+            <div>
+              <label>Client Email</label>
+              <input type="email" value="billing@acmecorp.com" />
+            </div>
+          </div>
+          <div class="form-row three">
+            <div>
+              <label>Country</label>
+              <select id="countrySelect" onchange="updateTax()">
+                <option value="US">🇺🇸 United States</option>
+                <option value="CA">🇨🇦 Canada</option>
+                <option value="UK">🇬🇧 United Kingdom</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div id="provinceWrap" style="display:none">
+              <label>Province</label>
+              <select id="provinceSelect" onchange="updateTax()">
+                <option value="NS">Nova Scotia</option>
+                <option value="ON">Ontario</option>
+                <option value="BC">British Columbia</option>
+                <option value="AB">Alberta</option>
+                <option value="QC">Quebec</option>
+                <option value="MB">Manitoba</option>
+                <option value="SK">Saskatchewan</option>
+                <option value="NB">New Brunswick</option>
+                <option value="PEI">PEI</option>
+                <option value="NL">Newfoundland</option>
+              </select>
+            </div>
+            <div>
+              <label>Invoice #</label>
+              <input type="text" value="INV-010" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Dates -->
+        <div class="form-section">
+          <div class="form-section-title">Invoice Details</div>
+          <div class="form-row">
+            <div>
+              <label>Issue Date</label>
+              <input type="date" value="2026-04-18" />
+            </div>
+            <div>
+              <label>Due Date</label>
+              <input type="date" value="2026-05-18" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Line Items -->
+        <div class="form-section">
+          <div class="form-section-title">Line Items</div>
+          <table class="line-items-table" id="lineTable">
+            <thead>
+              <tr>
+                <th style="width:45%">Description</th>
+                <th style="width:12%">Qty</th>
+                <th style="width:18%">Rate</th>
+                <th style="width:18%">Amount</th>
+                <th style="width:7%"></th>
+              </tr>
+            </thead>
+            <tbody id="lineBody">
+              <tr>
+                <td><input type="text" value="Web development — April sprint" /></td>
+                <td><input type="number" value="1" oninput="calcLine(this)" style="text-align:center"/></td>
+                <td><input type="number" value="2000" oninput="calcLine(this)" /></td>
+                <td><input type="text" value="$2,000.00" readonly style="background:var(--warm);font-weight:600"/></td>
+                <td><button class="line-del">×</button></td>
+              </tr>
+              <tr>
+                <td><input type="text" value="UI design consultation" /></td>
+                <td><input type="number" value="2" oninput="calcLine(this)" style="text-align:center"/></td>
+                <td><input type="number" value="250" oninput="calcLine(this)" /></td>
+                <td><input type="text" value="$500.00" readonly style="background:var(--warm);font-weight:600"/></td>
+                <td><button class="line-del">×</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="add-line-btn">＋ Add line item</button>
+        </div>
+
+        <!-- Notes -->
+        <div class="form-section">
+          <div class="form-section-title">Notes & Payment Instructions</div>
+          <div class="form-row full">
+            <div>
+              <label>Payment Instructions</label>
+              <textarea>E-Transfer to michelle@example.com · PayPal: @michelle · Payment due within 30 days. Thank you for your business!</textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary sidebar -->
+      <div class="summary-card">
+        <div class="summary-title">Invoice Summary</div>
+
+        <div class="currency-toggle">
+          <div class="currency-btn active" onclick="setCurrency('CAD', this)">CAD $</div>
+          <div class="currency-btn" onclick="setCurrency('USD', this)">USD $</div>
+        </div>
+
+        <div id="taxDisplay" class="tax-box" style="margin-bottom:16px">
+          <div class="tax-box-title">🇨🇦 Tax Calculation</div>
+          <div id="taxLines"></div>
+        </div>
+
+        <div class="summary-line">
+          <span class="label">Subtotal</span>
+          <span id="subtotalDisplay">$2,500.00</span>
+        </div>
+        <div id="taxSummaryLines"></div>
+        <div class="summary-line total">
+          <span>Total</span>
+          <span id="totalDisplay">$2,500.00</span>
+        </div>
+
+        <div class="action-stack">
+          <button class="btn-send" onclick="showScreen('preview', null, 'tab-preview')">📧 Send to Client</button>
+          <button class="btn-pdf" onclick="showScreen('preview', null, 'tab-preview')">👁 Preview PDF</button>
+          <button class="btn-draft">Save as Draft</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PDF PREVIEW ── -->
+  <div class="screen" id="screen-preview">
+    <div class="pdf-wrap">
+      <div class="pdf-paper">
+        <div class="pdf-top">
+          <div>
+            <div class="pdf-logo"><div class="pdf-logo-letter">M</div></div>
+            <div class="pdf-biz-name">Michelle Dev Studio</div>
+            <div class="pdf-biz-detail">
+              Halifax, Nova Scotia, Canada<br>
+              GST/HST: 123 456 789 RT0001<br>
+              michelle@example.com
+            </div>
+          </div>
+          <div class="pdf-title-block">
+            <div class="pdf-invoice-word">Invoice</div>
+            <div class="pdf-inv-num">INV-009</div>
+            <div class="pdf-dates">
+              <div class="pdf-date-label">Issued</div>
+              <div class="pdf-date-val">Apr 10, 2026</div>
+              <div class="pdf-date-label">Due</div>
+              <div class="pdf-date-val">May 10, 2026</div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="pdf-divider">
+
+        <div class="pdf-addresses">
+          <div>
+            <div class="pdf-addr-label">Billed To</div>
+            <div class="pdf-addr-name">Acme Corp</div>
+            <div class="pdf-addr-detail">billing@acmecorp.com<br>United States 🇺🇸</div>
+          </div>
+          <div>
+            <div class="pdf-addr-label">From</div>
+            <div class="pdf-addr-name">Michelle Dev Studio</div>
+            <div class="pdf-addr-detail">Halifax, NS, Canada<br>GST/HST Reg. #123456789</div>
+          </div>
+        </div>
+
+        <table class="pdf-table">
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th>Qty</th>
+              <th>Rate</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Web development — April sprint</td>
+              <td>1</td>
+              <td>$2,000.00</td>
+              <td>$2,000.00</td>
+            </tr>
+            <tr>
+              <td>UI design consultation</td>
+              <td>2</td>
+              <td>$250.00</td>
+              <td>$500.00</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="zero-rated-note">
+          Zero-rated export supply — GST/HST not applicable (ETA s.123). Client is located outside of Canada.
+        </div>
+
+        <div class="pdf-totals">
+          <div class="pdf-total-line"><span class="lbl">Subtotal</span><span>$2,500.00 USD</span></div>
+          <div class="pdf-total-line"><span class="lbl">GST/HST</span><span>$0.00 (zero-rated)</span></div>
+          <div class="pdf-total-line grand"><span>Total Due</span><span>$2,500.00 USD</span></div>
+        </div>
+
+        <div class="pdf-footer">
+          <strong>Payment Instructions:</strong> E-Transfer to michelle@example.com · PayPal: @michelle<br>
+          Payment due within 30 days. Thank you for your business!
+        </div>
+      </div>
+
+      <div class="pdf-actions">
+        <button class="btn-primary">📧 Send Email</button>
+        <button class="btn-secondary">⬇ Download PDF</button>
+        <button class="btn-secondary">✓ Mark as Paid</button>
+        <button class="btn-secondary">⧉ Duplicate</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CLIENTS ── -->
+  <div class="screen" id="screen-clients">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Clients</div>
+        <div class="page-sub">5 saved clients</div>
+      </div>
+      <button class="btn-primary">＋ Add Client</button>
+    </div>
+    <div class="table-wrap" style="padding-top:24px">
+      <table>
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>Country / Province</th>
+            <th>Tax Treatment</th>
+            <th>Last Invoice</th>
+            <th>Total Billed</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Acme Corp</strong><br><span style="font-size:12px;color:var(--muted)">billing@acmecorp.com</span></td>
+            <td>🇺🇸 United States</td>
+            <td><span class="badge badge-sent">Zero-rated</span></td>
+            <td style="color:var(--muted);font-size:13px">Apr 10, 2026</td>
+            <td><strong>$7,500 USD</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Maple Media</strong><br><span style="font-size:12px;color:var(--muted)">accounts@maplemedia.ca</span></td>
+            <td>🇨🇦 Ontario</td>
+            <td><span class="badge badge-paid">HST 13%</span></td>
+            <td style="color:var(--muted);font-size:13px">Apr 1, 2026</td>
+            <td><strong>$4,800 CAD</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Halifax Brew Co.</strong><br><span style="font-size:12px;color:var(--muted)">finance@halifaxbrew.ca</span></td>
+            <td>🇨🇦 Nova Scotia</td>
+            <td><span class="badge badge-paid">HST 15%</span></td>
+            <td style="color:var(--muted);font-size:13px">Mar 15, 2026</td>
+            <td><strong>$2,300 CAD</strong></td>
+          </tr>
+          <tr>
+            <td><strong>TechStart BC</strong><br><span style="font-size:12px;color:var(--muted)">ap@techstartbc.com</span></td>
+            <td>🇨🇦 British Columbia</td>
+            <td><span class="badge badge-draft">GST + PST</span></td>
+            <td style="color:var(--muted);font-size:13px">Mar 5, 2026</td>
+            <td><strong>$6,100 CAD</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Montreal Agency</strong><br><span style="font-size:12px;color:var(--muted)">billing@mtlagency.ca</span></td>
+            <td>🇨🇦 Quebec</td>
+            <td><span class="badge badge-draft">GST + QST</span></td>
+            <td style="color:var(--muted);font-size:13px">Feb 20, 2026</td>
+            <td><strong>$3,200 CAD</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── SETTINGS ── -->
+  <div class="screen" id="screen-settings">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Settings</div>
+        <div class="page-sub">Manage your business profile and preferences</div>
+      </div>
+    </div>
+    <div class="settings-wrap" style="padding-top:24px">
+
+      <div class="settings-section">
+        <div class="settings-section-title">🏢 Business Profile</div>
+        <div class="form-row">
+          <div><label>Full Name</label><input type="text" value="Michelle Johnson" /></div>
+          <div><label>Business Name</label><input type="text" value="Michelle Dev Studio" /></div>
+        </div>
+        <div class="form-row">
+          <div><label>Province</label>
+            <select>
+              <option selected>Nova Scotia</option>
+              <option>Ontario</option>
+              <option>British Columbia</option>
+              <option>Alberta</option>
+              <option>Quebec</option>
+            </select>
+          </div>
+          <div><label>Default Currency</label>
+            <select>
+              <option>CAD — Canadian Dollar</option>
+              <option>USD — US Dollar</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div><label>GST/HST Number</label><input type="text" value="123 456 789 RT0001" /></div>
+          <div><label>QST Number (Quebec only)</label><input type="text" placeholder="Leave blank if not applicable" /></div>
+        </div>
+        <button class="btn-primary" style="margin-top:8px">Save Changes</button>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">🧾 Tax Settings</div>
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">I am registered for GST/HST</div>
+            <div class="toggle-desc">Enables tax lines on Canadian client invoices. Toggle off if under $30K/yr threshold.</div>
+          </div>
+          <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Show zero-rated note on international invoices</div>
+            <div class="toggle-desc">Adds CRA zero-rated export note to US/international invoices automatically.</div>
+          </div>
+          <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">💳 Subscription <span class="plan-badge">Pro — Active</span></div>
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Monthly Plan</div>
+            <div class="toggle-desc">$19 CAD/month · Next billing: May 18, 2026</div>
+          </div>
+          <button class="btn-secondary">Manage Plan</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<script>
+  function showScreen(name, navEl, tabId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + name).classList.add('active');
+
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if (navEl) navEl.classList.add('active');
+
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    if (tabId) document.getElementById(tabId).classList.add('active');
+  }
+
+  function updateTax() {
+    const country = document.getElementById('countrySelect').value;
+    const provinceWrap = document.getElementById('provinceWrap');
+    const province = document.getElementById('provinceSelect').value;
+    const subtotal = 2500;
+
+    provinceWrap.style.display = country === 'CA' ? 'block' : 'none';
+
+    let taxLines = [];
+    let note = '';
+
+    if (country !== 'CA') {
+      note = 'Zero-rated export — GST/HST not applicable (ETA s.123)';
+      document.getElementById('taxLines').innerHTML = `<div class="tax-line zero-rated">No tax charged</div><div class="tax-note">${note}</div>`;
+      document.getElementById('taxSummaryLines').innerHTML = `<div class="summary-line"><span class="label">Tax (zero-rated)</span><span>$0.00</span></div>`;
+      document.getElementById('subtotalDisplay').textContent = '$2,500.00';
+      document.getElementById('totalDisplay').textContent = '$2,500.00';
+      return;
+    }
+
+    const rates = {
+      NS: [{name:'HST', rate:0.15}],
+      ON: [{name:'HST', rate:0.13}],
+      NB: [{name:'HST', rate:0.15}],
+      PEI:[{name:'HST', rate:0.15}],
+      NL: [{name:'HST', rate:0.15}],
+      BC: [{name:'GST', rate:0.05},{name:'PST', rate:0.07}],
+      AB: [{name:'GST', rate:0.05}],
+      SK: [{name:'GST', rate:0.05},{name:'PST', rate:0.06}],
+      MB: [{name:'GST', rate:0.05},{name:'RST', rate:0.07}],
+      QC: [{name:'GST', rate:0.05},{name:'QST', rate:0.09975}],
+    };
+
+    const provRates = rates[province] || [{name:'GST', rate:0.05}];
+    let totalTax = 0;
+    let taxLinesHTML = '';
+    let summaryLinesHTML = '';
+
+    provRates.forEach(t => {
+      const amt = subtotal * t.rate;
+      totalTax += amt;
+      taxLinesHTML += `<div class="tax-line"><span>${t.name} (${(t.rate*100).toFixed(1).replace('.0','')}%)</span><span>$${amt.toFixed(2)}</span></div>`;
+      summaryLinesHTML += `<div class="summary-line"><span class="label">${t.name} (${(t.rate*100).toFixed(1).replace('.0','')}%)</span><span>$${amt.toFixed(2)}</span></div>`;
+    });
+
+    document.getElementById('taxLines').innerHTML = taxLinesHTML;
+    document.getElementById('taxSummaryLines').innerHTML = summaryLinesHTML;
+    document.getElementById('subtotalDisplay').textContent = '$2,500.00';
+    document.getElementById('totalDisplay').textContent = '$' + (subtotal + totalTax).toFixed(2);
+  }
+
+  function setCurrency(cur, el) {
+    document.querySelectorAll('.currency-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // Init tax display
+  updateTax();
+</script>
+</body>
+</html>
