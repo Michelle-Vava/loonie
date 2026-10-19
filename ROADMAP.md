@@ -51,7 +51,15 @@ Loonie started as "invoiced.ca", a freelancer invoicing tool (see [docs/spec.pdf
 - [ ] Webhook handler with signature check (created / cancelled / expired)
 - [ ] Free tier limits and upgrade prompts
 
-## Phase 6: Launch
+## Phase 6: Invoice Unblocker (small suppliers billing larger businesses)
+Late payment is often not a forgetful client: UK government research with 300 businesses found 36% blamed their own late payments on admin errors, 31% on disputed invoices and 23% on technical issues such as invoices not arriving.
+- [ ] Track every sent quote/invoice with a "why is it stuck?" status: missing PO number, wrong details, missing proof of delivery, awaiting approval, disputed
+- [ ] Attach the supporting documents each blocker needs
+- [ ] One clear next action and who owns it
+- [ ] Industry checklists for buyer requirements (start with one trade, e.g. construction subcontractors), so invoices go out complete the first time
+- [ ] Timeline of every follow-up
+
+## Phase 7: Launch
 - [ ] Landing page explaining the three services
 - [ ] Deploy to Vercel
 - [ ] Tests for API routes, totals and rounding edge cases
