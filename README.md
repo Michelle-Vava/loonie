@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Loonie
 
-## Getting Started
+Money tools for Canadian freelancers, with the sales tax worked out for you.
 
-First, run the development server:
+Loonie is three services in one app, all powered by the same Canadian tax engine:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+| Service | What it does | Account |
+|---------|-------------|---------|
+| **Tax Tools** | Free GST/HST/PST/QST calculators, a "do I charge tax on this client?" wizard, a $30K small-supplier threshold checker, and plain-language guides | None, free and public |
+| **Money Coach** | Log income as it comes in; Loonie tells you how much to set aside for sales tax and income tax, and warns you before you cross $30K | Free account |
+| **Quotes** | Build polished project quotes with the correct tax for the client's province, share them by link, and let clients accept in one click | Paid plan |
+
+**Who it's for:** Canadian freelancers and solo businesses who work with clients across provinces or outside Canada and don't want to look up tax rules every time.
+
+**Status:** early build. The Canadian tax engine is done and fully tested. The dashboard, client list, quote builder (currently an invoice builder) and settings screens exist with made-up sample data. Tax Tools, Money Coach, auth and the database are next. See [ROADMAP.md](ROADMAP.md).
+
+---
+
+## Tax rules
+
+| Client | Tax applied |
+|--------|-------------|
+| Outside Canada | 0%, zero-rated export note (ETA s.123) |
+| Seller not GST/HST registered | No tax lines, small-supplier note |
+| ON | HST 13% |
+| NS, NB, PEI, NL | HST 15% |
+| BC | GST 5% + PST 7% |
+| SK | GST 5% + PST 6% |
+| MB | GST 5% + RST 7% |
+| QC | GST 5% + QST 9.975% |
+| AB, YT, NT, NU | GST 5% |
+
+All of this lives in [`lib/tax.ts`](lib/tax.ts), with a test for every case in [`__tests__/tax.test.ts`](__tests__/tax.test.ts).
+
+---
+
+## Built with
+
+| Layer | Choice |
+|-------|--------|
+| Framework | Next.js (App Router) + TypeScript |
+| State | Zustand |
+| Database + auth | Supabase (PostgreSQL) |
+| Payments | Lemon Squeezy (planned) |
+| Email | Resend (planned) |
+| Tests | Jest |
+| Hosting | Vercel (planned) |
+
+---
+
+## Project structure
+
+```
+app/
+├── (dashboard)/
+│   ├── layout.tsx            # Sidebar + shell for signed-in screens
+│   ├── dashboard/page.tsx    # Overview + stats
+│   ├── invoices/new/page.tsx # Builder with live tax calculation (becoming the quote builder)
+│   ├── clients/page.tsx      # Client list
+│   └── settings/page.tsx     # Business profile + GST/HST settings
+lib/
+├── tax.ts                    # Canadian sales tax engine
+└── supabase.ts               # Supabase client helpers
+store/                        # Zustand stores
+types/                        # Invoice, client and tax types
+__tests__/tax.test.ts         # Tax engine tests
+docs/                         # Original spec and UI prototype (from when this was "invoiced.ca"), SEO plan
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Running locally
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install
+cp .env.example .env.local   # fill in your own keys
+npm run dev
+```
 
-## Learn More
+Open `http://localhost:3000`. The current screens run on sample data, so you can explore them without filling in the keys.
 
-To learn more about Next.js, take a look at the following resources:
+Run the tests:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm test
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Sample data only
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+All clients, quotes and income figures in this repo are made up. No real client or financial data is stored or committed.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## License
+
+[MIT](LICENSE) © 2026 Michelle Vava
