@@ -1,6 +1,11 @@
 # Loonie
 
+[![test](https://github.com/Michelle-Vava/loonie/actions/workflows/test.yml/badge.svg)](https://github.com/Michelle-Vava/loonie/actions/workflows/test.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 Money tools for Canadian freelancers, with the sales tax worked out for you.
+
+**▶ Live demo: [loonie-alpha.vercel.app](https://loonie-alpha.vercel.app)**. Everything on it is made-up sample data.
 
 Loonie is three services in one app, all powered by the same Canadian tax engine:
 
@@ -92,7 +97,10 @@ Checks:
 npm test
 npm run lint
 npm run typecheck
+npm run build
 ```
+
+GitHub Actions runs all four on every push and pull request. Every push to `main` also deploys to the live demo on Vercel.
 
 ---
 

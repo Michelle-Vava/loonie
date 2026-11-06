@@ -7,7 +7,7 @@ Loonie is three services built on one Canadian tax engine: **Tax Tools**, **Mone
 | Phase | Status | Estimate |
 |---|---|---|
 | Done: tax engine, sample screens | ✅ | |
-| Phase 0: Online with a basic UI | not started | 3–5 h |
+| Phase 0: Online with a basic UI | started: live on Vercel | 3–5 h |
 | Phase 1: Get the tax right | not started | 4–6 h |
 | Phase 2: Pivot clean-up | not started | 4–6 h |
 | Phase 3: Tax Tools | not started | 6–8 h |
@@ -42,7 +42,7 @@ A first look at all three services, live on the web. Screens only: everything is
 - [ ] Home page that introduces Tax Tools, Money Coach and Quotes
 - [ ] One placeholder screen per service, with hard-coded sample figures, labelled as sample data
 - [ ] Navigation between the three services that works on a phone
-- [ ] Deploy to Vercel, with the live link in the README
+- [x] Deploy to Vercel, with the live link in the README ([loonie-alpha.vercel.app](https://loonie-alpha.vercel.app))
 
 **Done when:** the live link opens on a phone and every screen is reachable, with no keys or accounts needed.
 
