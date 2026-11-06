@@ -25,7 +25,7 @@ const defaultLineItem = () => ({
   sort_order: 0,
 })
 
-export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
+export const useInvoiceStore = create<InvoiceStore>((set) => ({
   invoices: [],
   currentInvoice: null,
   lineItems: [defaultLineItem()],

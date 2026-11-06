@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useInvoiceStore } from '@/store/invoiceStore'
 import { calculateTax } from '@/lib/tax'
-import type { TaxLine } from '@/types/tax'
 
 const PROVINCES = [
   { code: 'NS', name: 'Nova Scotia' }, { code: 'ON', name: 'Ontario' },
@@ -31,16 +30,17 @@ export default function NewInvoicePage() {
   const [currency, setCurrency] = useState<'CAD' | 'USD'>('CAD')
   const [clientCountry, setClientCountry] = useState('US')
   const [clientProvince, setClientProvince] = useState('NS')
-  const [taxLines, setTaxLines] = useState<TaxLine[]>([])
+  // Issue date today, due in 30 days. Worked out once, when the page opens.
+  const [defaultDates] = useState(() => {
+    const now = Date.now()
+    const iso = (ms: number) => new Date(ms).toISOString().split('T')[0]
+    return { issue: iso(now), due: iso(now + 30 * 86400000) }
+  })
 
   const subtotal = lineItems.reduce((sum, item) => sum + item.amount, 0)
+  const taxLines = calculateTax('NS', clientCountry, clientCountry === 'CA' ? clientProvince : null, subtotal, true)
   const taxTotal = taxLines.reduce((sum, t) => sum + t.amount, 0)
   const total = subtotal + taxTotal
-
-  useEffect(() => {
-    const lines = calculateTax('NS', clientCountry, clientCountry === 'CA' ? clientProvince : null, subtotal, true)
-    setTaxLines(lines)
-  }, [clientCountry, clientProvince, subtotal])
 
   const sectionStyle = {
     background: 'white', border: '1.5px solid var(--border)', borderRadius: 12, padding: 22, marginBottom: 16,
@@ -109,11 +109,11 @@ export default function NewInvoicePage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 {label('Issue Date')}
-                <input type="date" style={inputStyle} defaultValue={new Date().toISOString().split('T')[0]} />
+                <input type="date" style={inputStyle} defaultValue={defaultDates.issue} />
               </div>
               <div>
                 {label('Due Date')}
-                <input type="date" style={inputStyle} defaultValue={new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0]} />
+                <input type="date" style={inputStyle} defaultValue={defaultDates.due} />
               </div>
             </div>
           </div>
